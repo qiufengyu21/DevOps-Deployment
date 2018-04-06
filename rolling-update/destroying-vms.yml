@@ -1,0 +1,40 @@
+---
+- hosts: localhost
+  connection: local
+
+  vars:
+    do_token: "{{ lookup('env', 'DOTOKEN') }}"
+    droplets:
+    - droplet-one
+    - droplet-two
+    - droplet-three
+    - droplet-four
+    - droplet-five
+    - droplet-mysql
+  
+  tasks:
+  
+  - name: ensure ssh key exists
+    user:
+      name: "{{ ansible_user_id }}"
+      generate_ssh_key: yes
+      ssh_key_file: .ssh/id_rsa
+  
+  - name: ensure key exists at DigitalOcean
+    digital_ocean:
+      state: present
+      command: ssh
+      name: my_ssh_key
+      ssh_pub_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+      api_token: "{{ do_token }}"
+    register: my_ssh_key
+
+  - name: delete droplet 
+    digital_ocean:
+      state: absent
+      command: droplet
+      name: "{{ droplets }}"
+      ssh_key_ids: "{{ my_ssh_key.ssh_key.id }}"
+      api_token: "{{ do_token }}"
+      wait_timeout: 180
+    with_items: "{{ droplets }}"  

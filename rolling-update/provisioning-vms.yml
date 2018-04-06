@@ -1,0 +1,74 @@
+---
+- hosts: localhost
+  connection: local
+
+  vars:
+    do_token: "{{ lookup('env', 'DOTOKEN') }}"
+    droplets:
+    - droplet-one
+    - droplet-two
+    - droplet-three
+    - droplet-four
+    - droplet-five
+    - droplet-mysql
+  
+  
+  tasks:
+  - name: install pip
+    become: yes
+    apt:
+      name: python-pip
+  
+  - name: install dopy
+    become: yes
+    pip:
+      name: dopy
+      version: 0.3.5
+
+  - name: ensure ssh key exists
+    user:
+      name: "{{ ansible_user_id }}"
+      generate_ssh_key: yes
+      ssh_key_file: .ssh/id_rsa
+  
+  - name: ensure key exists at DigitalOcean
+    digital_ocean:
+      state: present
+      command: ssh
+      name: my_ssh_key
+      ssh_pub_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+      api_token: "{{ do_token }}"
+    register: my_ssh_key
+  
+  - name: create droplet if it does not exists
+    digital_ocean:
+      state: present
+      command: droplet
+      name: "{{ item }}"
+      unique_name: yes
+      size_id: 1gb
+      region_id: sgp1
+      image_id: ubuntu-16-04-x64
+      ssh_key_ids: "{{ my_ssh_key.ssh_key.id }}"
+      api_token: "{{ do_token }}"
+      wait_timeout: 180
+    with_items: "{{ droplets }}"  
+    register: droplet_details
+  
+  - name: display IP address of droplet created
+    debug: 
+      msg:"IP is {{ item.droplet.ip_address }}"
+    with_items: "{{ droplet_details.results }}"
+  
+  - name: add new host to inventory 
+    add_host:
+      name: "{{ item.droplet.ip_address }}"
+      group: new_droplet
+    with_items: "{{ droplet_details.results }}"
+  
+  - name: Wait 300 seconds for port 22 to become open on the droplet, don't start checking for 10 seconds
+    wait_for:
+      host: "{{ item.droplet.ip_address }}"
+      port: 22
+      delay: 5
+    with_items: "{{ droplet_details.results }}"
