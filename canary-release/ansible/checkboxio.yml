@@ -58,6 +58,5 @@
     with_items: 
     - mongodb-org
     - nodejs
-    - npm
     - nginx
     - python-pip
