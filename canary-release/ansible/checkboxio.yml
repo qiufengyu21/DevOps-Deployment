@@ -51,10 +51,10 @@
     apt:
       update_cache: true
 
-  - name: install mongodb, nodejs, npm, nginx and pip3
+  - name: install mongodb, nodejs, nginx and pip
     become: yes
     become_method: sudo
-    apt: pkg={{ item }} state=installed update_cache=true cache_valid_time=3600
+    apt: pkg={{ item }} state=present update_cache=true cache_valid_time=3600
     with_items: 
     - mongodb-org
     - nodejs
