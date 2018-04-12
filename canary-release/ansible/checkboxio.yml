@@ -1,6 +1,9 @@
-- hosts: localhost
-  connection: local
+---
+- import_playbook: provisioning-vm.yml
+
+- hosts: new_droplet
   gather_facts: yes
+  remote_user: root
 
   vars:
     mongo_user: admin
@@ -60,6 +63,7 @@
     - nodejs
     - nginx
     - python-pip
+    - git
 
   - name: install pymongo
     become: yes
@@ -84,7 +88,7 @@
     become: yes
     become_method: sudo
     copy:
-      remote_src: false
+      remote_src: true
       src: "{{ git_repo_folder }}/local-conf/nginx.conf"
       dest: /etc/nginx/nginx.conf
 
@@ -92,7 +96,7 @@
     become: yes
     become_method: sudo
     copy:
-      remote_src: false
+      remote_src: true
       src: "{{ git_repo_folder }}/local-conf/default"
       dest: /etc/nginx/sites-available/default
 
