@@ -1,0 +1,135 @@
+---
+- import_playbook: provisioning-vm.yml
+
+- hosts: new_droplet
+  gather_facts: yes
+  remote_user: root
+
+  vars:
+    mongo_user: admin
+    mongo_password: admin123
+    git_repo_folder: "/home/vagrant/checkbox.io"
+
+  environment:
+    MONGO_PORT: 3002
+    MONGO_IP: 127.0.0.1
+    MONGO_USER: "{{ mongo_user }}"
+    MONGO_PASSWORD: "{{ mongo_password }}"
+
+  tasks:
+  - name: add key for mongodb
+    become: yes
+    become_method: sudo
+    apt_key:
+      keyserver: keyserver.ubuntu.com
+      id: 7F0CEB10
+      state: present
+
+  - name: add mongodb repo
+    become: yes
+    become_method: sudo
+    lineinfile:
+      line: "deb http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.0 multiverse"
+      dest: /etc/apt/sources.list.d/mongodb-org-3.0.list
+      state: present
+      create: yes
+
+  - name: add key nodejs
+    become: yes
+    become_method: sudo
+    apt_key:
+      keyserver: keyserver.ubuntu.com
+      id: 68576280
+      state: present
+
+  - name: add nodejs repo
+    become: yes
+    become_method: sudo
+    apt_repository:
+      repo: 'deb https://deb.nodesource.com/node_7.x {{ ansible_distribution_release }} main'
+
+  - name: apt-get update
+    become: yes
+    become_method: sudo
+    apt:
+      update_cache: true
+
+  - name: install mongodb, nodejs, npm, nginx and pip3
+    become: yes
+    become_method: sudo
+    apt: pkg={{ item }} state=present update_cache=true cache_valid_time=3600
+    with_items: 
+    - mongodb-org
+    - nodejs
+    - nginx
+    - python-pip
+    - git
+
+  - name: install pymongo
+    become: yes
+    become_method: sudo
+    pip:
+      name: pymongo
+
+  - name: add admin user in mongodb
+    mongodb_user:
+      database: admin
+      name: "{{ mongo_user }}"
+      password: "{{ mongo_password }}"
+      roles: root
+
+  - name: clone checkbox.io repo
+    git:
+      repo: "https://github.com/chrisparnin/checkbox.io.git"
+      dest: "{{ git_repo_folder }}"
+      force: yes
+
+  - name: copy nginx.conf
+    become: yes
+    become_method: sudo
+    copy:
+      remote_src: true
+      src: "{{ git_repo_folder }}/local-conf/nginx.conf"
+      dest: /etc/nginx/nginx.conf
+
+  - name: copy local_conf/default
+    become: yes
+    become_method: sudo
+    copy:
+      remote_src: true
+      src: "{{ git_repo_folder }}/local-conf/default"
+      dest: /etc/nginx/sites-available/default
+
+  - name: update root path in default file
+    become: yes
+    become_method: sudo
+    lineinfile:
+      path: /etc/nginx/sites-available/default
+      regexp: 'root*'
+      line: "root {{ git_repo_folder }}/public_html/;"
+
+  - name: restart mongodb
+    become: yes
+    become_method: sudo
+    service:
+      name: mongod
+      state: restarted
+
+  - name: install node modules
+    shell: npm install
+    args:
+      chdir: "{{ git_repo_folder }}/server-side/site"
+    become: yes
+
+  - name: start nodejs
+    shell: "nohup node server.js &"
+    args:
+      chdir: "{{ git_repo_folder }}/server-side/site"
+    become: yes
+
+  - name: restart nginx
+    become: yes
+    become_method: sudo
+    service:
+      name: nginx
+      state: restarted
