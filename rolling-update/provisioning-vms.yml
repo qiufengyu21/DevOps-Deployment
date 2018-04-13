@@ -7,7 +7,7 @@
     git_auth: "{{ lookup('env', 'GITAUTH') }}"
     droplets_iTrust:
     - droplet-iTrust-1
-    # - droplet-iTrust-2
+    - droplet-iTrust-2
     # - droplet-iTrust-3
     # - droplet-iTrust-4
     # - droplet-iTrust-5
@@ -102,7 +102,7 @@
       delay: 10
     with_items: "{{ droplets_iTrust_details.results }}"
 
-  - name: Copy using the 'content' for inline data
+  - name: Write mysql IP to a file
     copy:
       content: "{{ droplet_mysql_details.droplet.ip_address }}"
       dest: mysql.info

@@ -1,2 +1,3 @@
 */*.retry
 *.retry
+rolling-update/*.info

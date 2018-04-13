@@ -2,48 +2,27 @@
 - hosts: droplets_iTrust
   gather_facts: no
   remote_user: root
+  serial: 1
   
   vars:
     git_repo_folder: /root/iTrust2-v2
 
   tasks:  
-  
-  - name: Run autoclean, autoremove and update cache
-    apt:
-      autoclean: yes
-      autoremove: yes
-      update_cache: yes
-      cache_valid_time: 3600
+  - name: stop jetty
+    shell: mvn jetty:stop
+    args:
+      chdir: "{{ git_repo_folder }}/iTrust2"
 
-  - name: Install Java 8 PreReq
-    apt: name=python-software-properties
-    
-  - name: Add Java 8 Repo
-    apt_repository: repo='ppa:webupd8team/java'
-
-  - name: Accept Oracle License
-    debconf: name=oracle-java8-installer question=shared/accepted-oracle-license-v1-1 vtype=select value=true
-
-  - name: Install Java 8
-    apt: name=oracle-java8-installer force=yes
-
-  - name: Install latest version of maven and git
-    apt: pkg="{{ item }}" state=present
-    with_items:
-    - maven
-    - git
-   
-  - name: delete directory if it exists
+  - name: delete directory
     file:
       path: "{{ git_repo_folder }}"
       state: absent
-
+   
   - name: Clone iTrust repository
     git:
       repo: https://github.com/qiufengyu21/iTrustv2-v2
       dest: "{{ git_repo_folder }}"
       clone: yes
-      force: yes
 
   - name: Rename the db.properties.template file 
     copy: 
@@ -95,5 +74,3 @@
     wait_for:
       port: 8080
       delay: 15
-
-- import_playbook: update.yml
