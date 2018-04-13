@@ -1,0 +1,85 @@
+---
+- hosts: droplets_iTrust
+  gather_facts: no
+  remote_user: root
+  
+  vars:
+    git_repo_folder: /root/iTrust2-v2
+
+  tasks:  
+  
+  - name: Run autoclean, autoremove and update cache
+    apt:
+      autoclean: yes
+      autoremove: yes
+      update_cache: yes
+
+  - name: Install Java 8 PreReq
+    apt: name=python-software-properties
+    
+  - name: Add Java 8 Repo
+    apt_repository: repo='ppa:webupd8team/java'
+
+  - name: Accept Oracle License
+    debconf: name=oracle-java8-installer question=shared/accepted-oracle-license-v1-1 vtype=select value=true
+
+  - name: Install Java 8
+    apt: name=oracle-java8-installer force=yes update_cache=yes cache_valid_time=3600
+
+  - name: Install latest version of maven and git
+    apt: pkg="{{ item }}" state=present update_cache=true cache_valid_time=3600
+    with_items:
+    - maven
+    - git
+   
+  - name: Clone iTrust repository
+    git:
+      repo: https://github.com/qiufengyu21/iTrustv2-v2
+      dest: "{{ git_repo_folder }}"
+      clone: yes
+
+  - name: Rename the db.properties.template file 
+    copy: 
+      remote_src: yes
+      src: "{{ git_repo_folder }}/iTrust2/src/main/java/db.properties.template"
+      dest: "{{ git_repo_folder }}/iTrust2/src/main/java/db.properties"
+
+  - name: edit db.properties file to connect mysql_server
+    replace:
+      path: "{{ git_repo_folder }}/iTrust2/src/main/java/db.properties"
+      regexp: localhost
+      replace: "{{lookup('file', 'mysql.info') }}"
+
+  - name: Rename the hibernate.properties.template file 
+    copy: 
+      remote_src: yes
+      src: "{{ git_repo_folder }}/iTrust2/src/main/resources/hibernate.properties.template"
+      dest: "{{ git_repo_folder }}/iTrust2/src/main/resources/hibernate.properties"
+  
+  - name: edit hibernate.properties file to connect mysql_server
+    replace:
+      path: "{{ git_repo_folder }}/iTrust2/src/main/resources/hibernate.properties"
+      regexp: localhost
+      replace: "{{lookup('file', 'mysql.info') }}"
+
+  - name: Rename the email.properties.template file
+    copy: 
+      remote_src: yes
+      src: "{{ git_repo_folder }}/iTrust2/src/main/java/email.properties.template"
+      dest: "{{ git_repo_folder }}/iTrust2/src/main/java/email.properties"
+   
+  - name: Download Tomcat and extract
+    unarchive:
+      remote_src: yes
+      src: http://mirror.cc.columbia.edu/pub/software/apache/tomcat/tomcat-9/v9.0.7/bin/apache-tomcat-9.0.7.tar.gz
+      dest: "{{ git_repo_folder }}/"
+
+  - name: Build the database and create sample data
+    shell: mvn process-test-classes
+    args:
+      chdir: "{{ git_repo_folder }}/iTrust2"
+
+  - name: Run iTrust
+    shell: nohup bash -c "mvn jetty:run" &
+    args:
+      chdir: "{{ git_repo_folder }}/iTrust2"

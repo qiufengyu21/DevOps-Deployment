@@ -1,15 +1,14 @@
 ---
 - hosts: localhost
-  connection: local
 
   vars:
     do_token: "{{ lookup('env', 'DOTOKEN') }}"
     droplets:
-    - droplet-one
-    - droplet-two
-    - droplet-three
-    - droplet-four
-    - droplet-five
+    - droplet-iTrust-1
+    - droplet-iTrust-2
+    - droplet-iTrust-3
+    - droplet-iTrust-4
+    - droplet-iTrust-5
     - droplet-mysql
   
   tasks:
@@ -20,7 +19,7 @@
       generate_ssh_key: yes
       ssh_key_file: .ssh/id_rsa
   
-  - name: ensure key exists at DigitalOcean
+  - name: check key at DigitalOcean
     digital_ocean:
       state: present
       command: ssh
@@ -29,12 +28,25 @@
       api_token: "{{ do_token }}"
     register: my_ssh_key
 
-  - name: delete droplet 
+  - name: delete droplets
     digital_ocean:
       state: absent
       command: droplet
-      name: "{{ droplets }}"
+      name: "{{ item }}"
+      unique_name: yes
+      size_id: 1gb
+      region_id: sgp1
+      image_id: ubuntu-14-04-x64
       ssh_key_ids: "{{ my_ssh_key.ssh_key.id }}"
       api_token: "{{ do_token }}"
       wait_timeout: 180
     with_items: "{{ droplets }}"  
+
+  - name: delete key at DigitalOcean
+    digital_ocean:
+      state: absent
+      command: ssh
+      name: my_ssh_key
+      ssh_pub_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+      api_token: "{{ do_token }}"
+  

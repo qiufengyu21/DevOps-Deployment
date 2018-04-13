@@ -1,18 +1,17 @@
 ---
 - hosts: localhost
-  connection: local
 
   vars:
     do_token: "{{ lookup('env', 'DOTOKEN') }}"
-    droplets:
-    - droplet-one
-    - droplet-two
-    - droplet-three
-    - droplet-four
-    - droplet-five
-    - droplet-mysql
-  
-  
+    git_username: "{{ lookup('env', 'GITUSER') }}"
+    git_auth: "{{ lookup('env', 'GITAUTH') }}"
+    droplets_iTrust:
+    - droplet-iTrust-1
+    # - droplet-iTrust-2
+    # - droplet-iTrust-3
+    # - droplet-iTrust-4
+    # - droplet-iTrust-5
+    
   tasks:
   - name: install pip
     become: yes
@@ -39,8 +38,38 @@
       ssh_pub_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
       api_token: "{{ do_token }}"
     register: my_ssh_key
+
+ # Create droplet for mysql
+  - name: create droplet for mysql server if it does not exists
+    digital_ocean:
+      state: present
+      command: droplet
+      name: droplet-mysql
+      unique_name: yes
+      size_id: 1gb
+      region_id: sgp1
+      image_id: ubuntu-14-04-x64
+      ssh_key_ids: "{{ my_ssh_key.ssh_key.id }}"
+      api_token: "{{ do_token }}"
+    register: droplet_mysql_details
   
-  - name: create droplet if it does not exists
+  - name: display IP
+    debug:
+      msg: "IP is {{ droplet_mysql_details.droplet.ip_address }}"
+  
+  - name: add new host to inventory 
+    add_host:
+      name: "{{ droplet_mysql_details.droplet.ip_address }}"
+      group: droplets_mysql
+  
+  - name: Wait 300 seconds for port 22 to become open on the droplet, don't start checking for 5 seconds
+    wait_for:
+      host: "{{ droplet_mysql_details.droplet.ip_address }}"
+      port: 22
+      delay: 5
+
+  # create droplets for iTrust
+  - name: create droplets for iTrust if it does not exists
     digital_ocean:
       state: present
       command: droplet
@@ -48,27 +77,35 @@
       unique_name: yes
       size_id: 1gb
       region_id: sgp1
-      image_id: ubuntu-16-04-x64
+      image_id: ubuntu-14-04-x64
       ssh_key_ids: "{{ my_ssh_key.ssh_key.id }}"
       api_token: "{{ do_token }}"
       wait_timeout: 180
-    with_items: "{{ droplets }}"  
-    register: droplet_details
+    with_items: "{{ droplets_iTrust }}"  
+    register: droplets_iTrust_details
   
   - name: display IP address of droplet created
     debug: 
       msg:"IP is {{ item.droplet.ip_address }}"
-    with_items: "{{ droplet_details.results }}"
+    with_items: "{{ droplets_iTrust_details.results }}"
   
   - name: add new host to inventory 
     add_host:
       name: "{{ item.droplet.ip_address }}"
-      group: new_droplet
-    with_items: "{{ droplet_details.results }}"
+      group: droplets_iTrust
+    with_items: "{{ droplets_iTrust_details.results }}"
   
   - name: Wait 300 seconds for port 22 to become open on the droplet, don't start checking for 10 seconds
     wait_for:
       host: "{{ item.droplet.ip_address }}"
       port: 22
-      delay: 5
-    with_items: "{{ droplet_details.results }}"
+      delay: 10
+    with_items: "{{ droplets_iTrust_details.results }}"
+
+  - name: Copy using the 'content' for inline data
+    copy:
+      content: "{{ droplet_mysql_details.droplet.ip_address }}"
+      dest: mysql.info
+
+- import_playbook: mysql-setup.yml
+- import_playbook: itrust-setup.yml

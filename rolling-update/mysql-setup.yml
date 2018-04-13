@@ -1,0 +1,60 @@
+---
+- hosts: droplets_mysql
+  remote_user: root
+  gather_facts: no
+ 
+  tasks:  
+  
+  - name: Run autoclean, autoremove and update cache
+    apt:
+      autoclean: yes
+      autoremove: yes
+      update_cache: yes
+
+  - name: Install pip, mysql
+    apt: 
+      pkg: "{{ item }}"
+      state: present
+    with_items:
+    - python-pip
+    - mysql-server
+    - libmysqlclient-dev
+    - libssl-dev
+    - build-essential
+    - libffi-dev
+    - python-dev
+
+  - name: install mysql-python
+    pip:
+      name: MySQL-python
+    
+  - name: edit my.cnf file - remove extra line
+    lineinfile:
+      path: /etc/mysql/my.cnf
+      line: [mysql]
+      state: absent
+
+  - name: comment out bind-address
+    replace:
+      path: /etc/mysql/my.cnf
+      regexp: bind-address
+      replace: "# bind-address"
+
+  - name: edit my.cnf file - add required lines
+    blockinfile:
+      path: /etc/mysql/my.cnf
+      block: |
+        [mysql]
+        skip-grant-tables
+
+  - name: Set mysql user privileges
+    mysql_user:
+      name: root
+      host: "%"
+      priv: "*.*:ALL"
+      state: present
+
+  - name: restart mysql
+    service:
+      name: mysql
+      state: restarted
