@@ -1,0 +1,27 @@
+---
+- name: install pip
+  apt:
+    name: python-pip
+    state: present
+  become: yes
+
+- name: install do py
+  pip:
+    name: dopy
+    version: 0.3.5
+  become: yes
+
+- name: ensure ssh keys exist
+  user:
+    name: "{{ ansible_user_id }}"
+    generate_ssh_key: yes
+    ssh_key_file: .ssh/id_rsa
+
+- name: ensure key exists at DigitalOcean
+  digital_ocean:
+    state: present
+    command: ssh
+    name: my_ssh_key
+    ssh_pub_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+    api_token: "{{ do_token }}"
+  register: my_ssh_key

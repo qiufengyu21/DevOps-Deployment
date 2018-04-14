@@ -1,0 +1,7 @@
+---
+- hosts: localhost
+  connection: local
+  vars:
+    - do_token: "{{ lookup('env', 'DOTOKEN') }}"
+  roles:
+    - prereqs
