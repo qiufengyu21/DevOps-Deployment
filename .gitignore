@@ -1,3 +1,4 @@
 */*.retry
 *.retry
 rolling-update/*.info
+rolling-update/heartbeat/node_modules
