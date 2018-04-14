@@ -1,0 +1,29 @@
+---
+- name: Get client JAR file
+  get_url:
+    url: http://{{ jenkins_hostname }}:{{ jenkins_http_port }}/jnlpJars/jenkins-cli.jar
+    dest: /home/vagrant/
+
+- name: Install Jenkins Plugins
+  jenkins_plugin:
+    name: "{{ item }}"
+    url_username: "{{ jenkins_admin_username }}"
+    url_password: "{{ jenkins_admin_password }}"
+    url: "http://{{jenkins_hostname}}:{{jenkins_http_port}}"
+  with_items: "{{ plugins }}"
+
+- name: Checking Jenkins State
+  service:
+    name: jenkins
+    state: started
+  become: yes
+
+- name: Restart Jenkins
+  service: name=jenkins state=restarted
+  become: yes
+
+- name: Wait while Jenkins starts
+  wait_for:
+    host: "{{ jenkins_hostname }}"
+    port: "{{ jenkins_http_port }}"
+    delay: 30

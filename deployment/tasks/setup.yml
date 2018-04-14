@@ -1,0 +1,46 @@
+---
+- name: Configure JVM Args
+  lineinfile:
+    dest: /etc/default/jenkins
+    regexp: '^JAVA_ARGS='
+    line: "{{ jenkins_java_args }}"
+  become: yes
+
+- name: Create Groovy Script directory
+  file:
+    path: "{{ jenkins_home }}/init.groovy.d"
+    state: directory
+    mode: 0755
+  become: yes
+
+- name: Copy Groovy Script for default user creation
+  template:
+    force: yes
+    src: "{{ groovy_file_path }}/jenkins_script.groovy.j2"
+    dest: "{{ jenkins_home }}/init.groovy.d/basic-security.groovy"
+    mode: 0755
+  become: yes
+
+- name: Restart jenkins
+  service: name=jenkins state=restarted
+  become: yes
+
+- name: Wait while Jenkins starts
+  wait_for: port={{ jenkins_http_port }} delay=30
+
+- name: Remove Groovy Script
+  file:
+    path: "{{ jenkins_home }}/init.groovy.d/basic-security.groovy"
+    state: absent
+  become: yes
+
+- name: Disable setup wizard
+  jenkins_script:
+    script: |
+      import static jenkins.model.Jenkins.instance as jenkins
+      import jenkins.install.InstallState
+      if (!jenkins.installState.isSetupComplete()) {
+        InstallState.INITIAL_SETUP_COMPLETED.initializeState()
+      }
+    user: "{{ jenkins_admin_username }}"
+    password: "{{ jenkins_admin_password }}"

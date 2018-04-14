@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <scm class="hudson.plugins.git.GitSCM" plugin="git@3.7.0">
+    <configVersion>2</configVersion>
+    <userRemoteConfigs>
+      <hudson.plugins.git.UserRemoteConfig>
+        <url>https://github.com/qiufengyu21/iTrustv2-v2</url>
+      </hudson.plugins.git.UserRemoteConfig>
+    </userRemoteConfigs>
+    <branches>
+      <hudson.plugins.git.BranchSpec>
+        <name>*/master</name>
+      </hudson.plugins.git.BranchSpec>
+    </branches>
+    <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+    <submoduleCfg class="list"/>
+    <extensions/>
+  </scm>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>cd iTrust2 &amp;&amp; mv src/main/java/email.properties.template src/main/java/email.properties &amp;&amp; mv src/main/java/db.properties.template src/main/java/db.properties &amp;&amp; mv src/main/resources/hibernate.properties.template src/main/resources/hibernate.properties &amp;&amp; mvn process-test-classes &amp;&amp; mvn clean test verify checkstyle:checkstyle</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers>
+    <org.jenkinsci.plugins.postbuildscript.PostBuildScript plugin="postbuildscript@2.5.1">
+      <config>
+        <scriptFiles>
+          <org.jenkinsci.plugins.postbuildscript.model.ScriptFile>
+            <results>
+              <string>SUCCESS</string>
+            </results>
+            <role>BOTH</role>
+            <filePath>/home/vagrant/final/post-build/itrust2-post-action.sh</filePath>
+            <scriptType>GENERIC</scriptType>
+            <sandboxed>false</sandboxed>
+          </org.jenkinsci.plugins.postbuildscript.model.ScriptFile>
+        </scriptFiles>
+        <groovyScripts/>
+        <buildSteps/>
+        <markBuildUnstable>false</markBuildUnstable>
+      </config>
+    </org.jenkinsci.plugins.postbuildscript.PostBuildScript>
+  </publishers>
+  <buildWrappers/>
+</project>

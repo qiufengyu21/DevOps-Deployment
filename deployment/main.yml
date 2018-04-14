@@ -1,0 +1,43 @@
+---
+- hosts: localhost
+  connection: local
+
+  vars_prompt:
+    - name: "jenkins_admin_username"
+      prompt: "Enter jenkins admin username"
+    - name: "jenkins_admin_password"
+      prompt: "Enter jenkins admin password"
+    - name: "DOTOKEN"
+      prompt: "Enter DO token"
+    - name: "GITUSER"
+      prompt: "Enter github.ncsu.edu user"
+    - name: "GITAUTH"
+      prompt: "Enter github.ncsu.edu auth token"
+
+  vars:
+    plugins:
+      - maven-plugin
+      - github
+      - postbuildscript
+      - postbuild-task
+    jenkins_java_args: 'JAVA_ARGS="-Djava.awt.headless=true -Djenkins.install.runSetupWizard=false"'
+    jenkins_home: /var/lib/jenkins
+    jenkins_hostname: 127.0.0.1
+    jenkins_http_port: 8080
+    jenkins_jar_location: "{{ ansible_env.HOME }}/jenkins-cli.jar"
+    jenkins_default_file: /etc/default/jenkins
+    jenkins_params:
+      url_username: "{{ jenkins_admin_username }}"
+      validate_certs: no
+    groovy_file_path: "{{ playbook_dir }}/templates"
+    dir: "{{ playbook_dir }}/jobs"
+
+  tasks:
+    - import_tasks: tasks/environment.yml
+    - import_tasks: tasks/prereqs.yml
+    - import_tasks: tasks/install.yml
+    - import_tasks: tasks/setup.yml
+    - import_tasks: tasks/plugins.yml
+    - import_tasks: tasks/clideps.yml
+    - import_tasks: tasks/appdeps.yml
+    - import_tasks: tasks/jobs.yml

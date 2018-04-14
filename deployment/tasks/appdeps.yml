@@ -1,0 +1,70 @@
+---
+- name: add key nodejs
+  shell: "sudo apt-key adv --keyserver keyserver.ubuntu.com --recv 68576280"
+  become: yes
+- name: add repo for nodejs
+  apt_repository:
+    repo: 'deb https://deb.nodesource.com/node_7.x {{ ansible_distribution_release }} main'
+    update_cache: yes
+  become: yes
+- name: install nodejs
+  apt:
+    name: nodejs
+  become: yes
+
+- name: Run autoclean, autoremove and update cache
+  apt:
+    autoclean: yes
+    autoremove: yes
+    update_cache: yes
+  become: yes
+
+- name: Install latest version of mysql
+  become_method: sudo
+  become: yes
+  apt:
+     pkg: "{{ item }}"
+     state: present
+  with_items:
+    - python-pip
+    - mysql-server
+    - libmysqlclient-dev
+    - libssl-dev
+    - build-essential
+    - libffi-dev
+    - python-dev
+- name: install mysql-python
+  pip:
+    name: MySQL-python
+- name: edit my.cnf file
+  become: yes
+  become_method: sudo
+  lineinfile:
+    path: /etc/mysql/my.cnf
+    line: '[mysql]'
+    state: absent
+- name: edit my.cnf file add mysql
+  become: yes
+  become_method: sudo
+  blockinfile:
+    path: /etc/mysql/my.cnf
+    block: |
+      [mysql]
+      skip-grant-tables
+- name: Set mysql user privileges
+  mysql_user:
+    name: root
+    host: "%"
+    priv: "*.*:ALL"
+    state: present
+- name: restart mysql
+  become: yes
+  become_method: sudo
+  service:
+    name: mysql
+    state: restarted
+
+- name: install maven
+  become: yes
+  apt:
+    name: maven

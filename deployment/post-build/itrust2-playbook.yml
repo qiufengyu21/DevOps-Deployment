@@ -1,0 +1,79 @@
+---
+- import_playbook: provisioning-vm.yml
+
+- hosts: new_droplet
+  gather_facts: no
+  remote_user: root
+  vars:
+    git_username: "{{ lookup('env', 'GITUSER') }}"
+    git_auth: "{{ lookup('env', 'GITAUTH') }}"
+    ansible_python_interpreter: /usr/bin/python3
+
+  tasks:
+  
+  - name: Install latest version of maven, mysql and java
+    apt: pkg={{ item }} state=installed update_cache=true cache_valid_time=36000
+    with_items:
+    - default-jdk  
+    - maven
+    - mysql-server 
+  
+  - name: edit my.cnf file
+    lineinfile:
+      path: /etc/mysql/my.cnf
+      line: "{{ item }}"
+    with_items:
+    - "[mysqld]"
+    - "skip-grant-tables"
+  
+  - name: restart mysql
+    service:
+      name: mysql
+      state: restarted
+
+  - name: Clone iTrust repository
+    git:
+      repo: "https://{{git_username}}:{{git_auth}}@github.ncsu.edu/engr-csc326-staff/iTrust2-v2.git"
+      dest: /home/ubuntu/iTrust2-v2/
+      clone: yes
+
+  - name: Rename the db.properties.template file 
+    copy: 
+      remote_src: yes
+      src: /home/ubuntu/iTrust2-v2/iTrust2/src/main/java/db.properties.template
+      dest: /home/ubuntu/iTrust2-v2/iTrust2/src/main/java/db.properties
+   
+  - name: Rename the hibernate.properties.template file 
+    copy: 
+      remote_src: yes
+      src: /home/ubuntu/iTrust2-v2/iTrust2/src/main/resources/hibernate.properties.template
+      dest: /home/ubuntu/iTrust2-v2/iTrust2/src/main/resources/hibernate.properties
+  
+  - name: Rename the email.properties.template file
+    copy: 
+      remote_src: yes
+      src: /home/ubuntu/iTrust2-v2/iTrust2/src/main/java/email.properties.template 
+      dest: /home/ubuntu/iTrust2-v2/iTrust2/src/main/java/email.properties
+   
+  - name: Download Tomcat and extract
+    unarchive:
+      remote_src: yes
+      src: http://mirror.cc.columbia.edu/pub/software/apache/tomcat/tomcat-9/v9.0.5/bin/apache-tomcat-9.0.5.tar.gz
+      dest: /home/ubuntu/
+
+  - name: Build the database and create sample data
+    shell: mvn process-test-classes
+    args:
+      chdir: /home/ubuntu/iTrust2-v2/iTrust2
+
+  - name: Run iTrust
+    shell: nohup bash -c "mvn jetty:run" &
+    args:
+      chdir: /home/ubuntu/iTrust2-v2/iTrust2
+
+  - name: Wait for iTrust2 to start
+    wait_for:
+      port: 8080
+      delay: 60
+      timeout: 600
+      search_regex: iTrust2

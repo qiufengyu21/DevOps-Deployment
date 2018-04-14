@@ -1,0 +1,10 @@
+---
+- name: configure checkboxio
+  shell: "java -jar {{ jenkins_jar_location }} -s http://{{ jenkins_hostname }}:{{ jenkins_http_port }} create-job checkboxio --username {{ jenkins_admin_username }} --password {{ jenkins_admin_password }} < {{ dir }}/checkboxio-job.xml"
+- name: configure itrust2
+  shell: "java -jar {{ jenkins_jar_location }} -s http://{{ jenkins_hostname }}:{{ jenkins_http_port }} create-job itrust2 --username {{ jenkins_admin_username }} --password {{ jenkins_admin_password }} < {{ dir }}/itrust2-job.xml"
+
+- name: run checkbox
+  shell: "java -jar {{ jenkins_jar_location }} -s http://{{ jenkins_hostname }}:{{ jenkins_http_port }} build checkboxio --username {{ jenkins_admin_username }} --password {{ jenkins_admin_password }}"
+- name: run itrust2
+  shell: "java -jar {{ jenkins_jar_location }} -s http://{{ jenkins_hostname }}:{{ jenkins_http_port }} build itrust2 --username {{ jenkins_admin_username }} --password {{ jenkins_admin_password }}"

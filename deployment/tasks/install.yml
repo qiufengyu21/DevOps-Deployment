@@ -1,0 +1,16 @@
+---
+- name: Download Jenkins
+  shell: wget -q -O - http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key | sudo apt-key add -
+  become: yes
+
+- name: Update jenkins source list
+  shell: sh -c 'echo deb http://pkg.jenkins-ci.org/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
+  become: yes
+
+- name: Update apt package
+  become: yes
+  action: apt update_cache=yes
+
+- name: Install Jenkins
+  apt: pkg=jenkins state=present install_recommends=yes update_cache=yes cache_valid_time=3600
+  become: yes

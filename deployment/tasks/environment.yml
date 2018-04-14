@@ -1,0 +1,11 @@
+---
+- name: Add environment values
+  become: yes
+  become_method: sudo
+  lineinfile:
+    path: "/etc/environment"
+    line: "{{ item }}"
+  with_items:
+    - "DOTOKEN={{ DOTOKEN }}"
+    - "GITUSER={{ GITUSER }}"
+    - "GITAUTH={{ GITAUTH }}"
