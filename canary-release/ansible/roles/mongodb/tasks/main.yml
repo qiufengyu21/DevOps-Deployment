@@ -1,0 +1,45 @@
+- name: add key for mongodb
+  become: yes
+  apt_key:
+    keyserver: keyserver.ubuntu.com
+    id: 7F0CEB10
+    state: present
+
+- name: add mongodb repo
+  become: yes
+  lineinfile:
+    line: "deb http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.0 multiverse"
+    dest: /etc/apt/sources.list.d/mongodb-org-3.0.list
+    state: present
+    create: yes
+
+- name: install mongodb
+  become: yes
+  apt:
+    name: mongodb-org
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: install pip
+  become: yes
+  apt:
+    name: python-pip
+    state: present
+
+- name: install pymongo
+  become: yes
+  pip:
+    name: pymongo
+
+- name: add admin user in mongodb
+  mongodb_user:
+    database: admin
+    name: "{{ mongo_user }}"
+    password: "{{ mongo_password }}"
+    roles: root
+
+- name: restart mongodb
+  become: yes
+  service:
+    name: mongod
+    state: restarted

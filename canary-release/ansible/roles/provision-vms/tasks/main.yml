@@ -1,0 +1,65 @@
+---
+- name: create mongodb VM
+  digital_ocean:
+    state: present
+    command: droplet
+    name: droplet-mongodb
+    unique_name: yes
+    size_id: 1gb
+    region_id: sgp1
+    image_id: ubuntu-14-04-x64
+    ssh_key_ids: "{{ my_ssh_key.ssh_key.id }}"
+    api_token: "{{ do_token }}"
+    wait_timeout: 180
+  register: droplet_mongodb
+
+- name: wait for mongodb VM to start
+  wait_for:
+    host: "{{ droplet_mongodb.droplet.ip_address }}"
+    port: 22
+    delay: 10
+
+- name: add to inventory
+  add_host:
+    name: "{{ droplet_mongodb.droplet.ip_address }}"
+    group: mongodb_host
+
+- name: create prod checkbox VM
+  digital_ocean:
+    state: present
+    command: droplet
+    name: droplet-prod
+    unique_name: yes
+    size_id: 1gb
+    region_id: sgp1
+    image_id: ubuntu-14-04-x64
+    ssh_key_ids: "{{ my_ssh_key.ssh_key.id }}"
+    api_token: "{{ do_token }}"
+    wait_timeout: 180
+  register: droplet_prod
+
+- name: wait for prod checkbox VM to start
+  wait_for:
+    host: "{{ droplet_prod.droplet.ip_address }}"
+    port: 22
+    delay: 10
+
+- name: create staging checkbox VM
+  digital_ocean:
+    state: present
+    command: droplet
+    name: droplet-staging
+    unique_name: yes
+    size_id: 1gb
+    region_id: sgp1
+    image_id: ubuntu-14-04-x64
+    ssh_key_ids: "{{ my_ssh_key.ssh_key.id }}"
+    api_token: "{{ do_token }}"
+    wait_timeout: 180
+  register: droplet_staging
+
+- name: wait for staging checkbox VM to start
+  wait_for:
+    host: "{{ droplet_staging.droplet.ip_address }}"
+    port: 22
+    delay: 10

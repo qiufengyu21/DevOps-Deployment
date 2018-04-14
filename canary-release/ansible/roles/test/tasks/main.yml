@@ -1,0 +1,4 @@
+---
+- name: see VM IPs
+  debug:
+    msg: "mongo: {{ droplet_mongodb.droplet.ip_address }} prod: {{ droplet_prod.droplet.ip_address }} staging: {{ droplet_staging.droplet.ip_address }}"

@@ -5,3 +5,17 @@
     - do_token: "{{ lookup('env', 'DOTOKEN') }}"
   roles:
     - prereqs
+    - provision-vms
+    #- test
+
+#hostvars['localhost']['droplet_mongodb']['droplet']['ip_address']
+
+- hosts: mongodb_host
+  remote_user: root
+  vars_prompt:
+    - name: "mongo_user"
+      prompt: "enter mongo admin user"
+    - name: "mongo_password"
+      prompt: "enter mongodb password"
+  roles:
+    - mongodb  
