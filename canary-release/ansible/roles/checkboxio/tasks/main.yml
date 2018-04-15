@@ -1,0 +1,74 @@
+- name: add key nodejs
+  become: yes
+  apt_key:
+    keyserver: keyserver.ubuntu.com
+    id: 68576280
+
+- name: add nodejs repo
+  become: yes
+  apt_repository:
+    repo: 'deb https://deb.nodesource.com/node_7.x {{ ansible_distribution_release }} main'
+
+- name: apt-get update
+  become: yes
+  apt:
+    update_cache: true
+
+- name: install nodejs, nginx, pip and git
+  become: yes
+  apt: pkg={{ item }} state=present update_cache=true cache_valid_time=3600
+  with_items:
+    - nodejs
+    - nginx
+    - python-pip
+    - git
+
+- name: install pymongo
+  become: yes
+  pip:
+    name: pymongo
+
+- name: clone checkbox.io repo
+  git:
+    repo: "https://github.com/chrisparnin/checkbox.io.git"
+    dest: "{{ git_repo_folder }}"
+    force: yes
+
+- name: copy nginx.conf
+  become: yes
+  copy:
+    remote_src: true
+    src: "{{ git_repo_folder }}/local-conf/nginx.conf"
+    dest: /etc/nginx/nginx.conf
+
+- name: copy local_conf/default
+  become: yes
+  copy:
+    remote_src: true
+    src: "{{ git_repo_folder }}/local-conf/default"
+    dest: /etc/nginx/sites-available/default
+
+- name: update root path in default file
+  become: yes
+  lineinfile:
+    path: /etc/nginx/sites-available/default
+    regexp: 'root*'
+    line: "root {{ git_repo_folder }}/public_html/;"
+
+- name: install node modules
+  become: yes
+  shell: npm install
+  args:
+    chdir: "{{ git_repo_folder }}/server-side/site"
+
+- name: start nodejs
+  become: yes
+  shell: "nohup node server.js &"
+  args:
+    chdir: "{{ git_repo_folder }}/server-side/site"
+
+- name: restart nginx
+  become: yes
+  service:
+    name: nginx
+    state: restarted
