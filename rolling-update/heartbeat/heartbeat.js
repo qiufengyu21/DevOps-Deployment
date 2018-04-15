@@ -1,14 +1,15 @@
+
 var http = require('http');
 var request = require('request');
 
+// websocket server that website connects to.
 var io = require('socket.io')(3000);
 
 /// CHILDREN nodes
 var nodeServers = 
 [
-	{url:"http://localhost:9000", latency: 0},
-	{url:"http://localhost:9001", latency: 0},
-	{url:"http://localhost:9002", latency: 0}
+	{url:"http://206.189.90.54:8080/iTrust2", latency: 0},
+	{url:"http://206.189.90.59:8080/iTrust2", latency: 0},
 ];
 
 function measureLatenancy(server)
@@ -17,55 +18,35 @@ function measureLatenancy(server)
 	{
 		url: server.url
 	};
-	console.log("request to url");
-	var startTime = Date.now();
 	request(options, function (error, res, body) 
 	{
-		console.log( error || res.statusCode, server.url);
-		server.latency = Date.now() - startTime;
-		console.log('Latency: ' + server.latency);
+		error ? server.alive = false : server.alive = true;
+		console.log('Alive? ' + server.alive);
 	});
-	return server.latency;
+	return server.alive;
 }
 
 function calculateColor()
 {
 	// latency scores of all nodes, mapped to colors.
-	var nodes = nodeServers.map( measureLatenancy ).map( function(latency) 
+	var nodes = nodeServers.map( measureLatenancy ).map( function(alive) 
 	{
-		var color = "#cccccc";
-		if( !latency )
+		var color = "#ff0000";
+		if( !alive )
+		{
 			return {color: color};
-		if( latency > 1000 )
-		{
-			color = "#ff0000";
-		}
-		else if( latency > 100 )
-		{
-			color = "#cc0000";
-		}
-		else if( latency > 75 )
-		{
-			color = "#ffff00";
-		}
-		else if( latency > 50 )
-		{
-			color = "#cccc00";
-		}
-		else if( latency > 25 )
-		{
-			color = "#00cc00";
 		}
 		else
 		{
-			color = "#00ff00";
+			color = "#008000";
 		}
-		console.log( latency );
+		console.log( color );
 		return {color: color};
 	});
 	//console.log( nodes );
 	return nodes;
 }
+
 
 io.on('connection', function (socket) {
 	console.log("Received connection");
@@ -76,8 +57,8 @@ io.on('connection', function (socket) {
 	var heartbeatTimer = setInterval( function () 
 	{
 		var data = { 
-			name: "Your Computer", cpu: cpuAverage(), memoryLoad: memoryLoad()
-			,nodes: calculateColor()
+			name: "iTrust Nodes",
+			nodes: calculateColor()
 		};
 		console.log("interval", data)
 		//io.sockets.emit('heartbeat', data );
