@@ -43,3 +43,10 @@
   service:
     name: mongod
     state: restarted
+
+- name: adding mongo_user
+  add_host:
+    name: "{{ ansible_default_ipv4.address }}"
+    group: mongodb_host
+    mongo_user: "{{ mongo_user }}"
+    mongo_password: "{{ mongo_password }}"

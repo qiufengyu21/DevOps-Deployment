@@ -25,11 +25,12 @@
   vars:
     git_repo_folder: "/home/vagrant/checkbox.io"
     mip_var: "{{ hostvars['localhost']['droplet_mongodb']['droplet']['ip_address'] }}"
-    mu_var: "{{ hostvars[groups['mongodb_host'][0]]['mongo_password'] }}"
+    mu_var: "{{ hostvars[groups['mongodb_host'][0]]['mongo_user'] }}"
+    mp_var: "{{ hostvars[groups['mongodb_host'][0]]['mongo_password'] }}"
   environment:
     MONGO_PORT: 3002
     #MONGO_USER: "{{ hostvars[groups['mongodb_host'][0]] }}"
   tasks:
     - name: test
       debug:
-        msg: "ip: {{ mip_var }} user: {{ mu_var }}"
+        msg: "ip: {{ mip_var }} user: {{ mu_var }} password: {{ mp_var }}"
