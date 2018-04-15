@@ -44,6 +44,11 @@
     port: 22
     delay: 10
 
+- name: add to inventory
+  add_host:
+    name: "{{ droplet_prod.droplet.ip_address }}"
+    group: droplets
+
 - name: create staging checkbox VM
   digital_ocean:
     state: present
@@ -63,3 +68,17 @@
     host: "{{ droplet_staging.droplet.ip_address }}"
     port: 22
     delay: 10
+
+- name: add to inventory
+  add_host:
+    name: "{{ droplet_staging.droplet.ip_address }}"
+    group: droplets
+
+#- name: store mongo ip
+#  shell: "echo {{ droplet_mongodb.droplet.ip_address }} > {{ ansible_env.HOME }}/mongo_ip"
+
+#- name: store mongo user
+#  shell: "echo {{ mongo_user }} > {{ ansible_env.HOME }}/mongo_user"
+
+#- name: store mongo password
+#  shell: "echo {{ mongo_password }} > {{ ansible_env.HOME }}/mongo_password"
