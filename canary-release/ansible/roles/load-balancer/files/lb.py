@@ -10,7 +10,7 @@ PORT_NUMBER = 8080 # Maybe set this to 9000.
 
 PROD = None
 STAGING = None
-r = redis.Redis()
+red = redis.Redis()
 
 class RedirectHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     def do_HEAD(s):
@@ -21,7 +21,7 @@ class RedirectHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 		print "sending to prod:", PROD
 		s.send_header("Location", "http://"+PROD)
 	else:
-		if r.get('flag') == '1':
+		if red.get('flag') == '1':
 			print "sending to staging:", STAGING
 			s.send_header("Location", "http://"+STAGING)
 		else:
