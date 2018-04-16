@@ -31,7 +31,7 @@
 
 - name: Clone iTrust repository
   git:
-    repo: https://github.com/qiufengyu21/iTrustv2-v2
+    repo: https://github.com/patel-bhavik/iTrust2-v2.git
     dest: "{{ git_repo_folder }}"
     clone: yes
     force: yes
