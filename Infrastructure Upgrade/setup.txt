@@ -1,0 +1,17 @@
+sudo su
+apt-get update && apt-get install -y apt-transport-https
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+cat <<EOF >/etc/apt/sources.list.d/kubernetes.list
+deb http://apt.kubernetes.io/ kubernetes-xenial main
+EOF
+apt-get update
+apt-get install -y kubectl
+================================================================
+wget https://github.com/kubernetes/kops/releases/download/1.8.0/kops-linux-amd64
+chmod +x kops-linux-amd64
+mv kops-linux-amd64 /usr/local/bin/kops
+================================================================
+export KOPS_STATE_STORE=s3://qiufengyu.test.bucket
+================================================================
+kops create cluster --cloud=aws --zones=us-east-1d --name=test.kubernetes.com --dns-zone=test.kubernetes.com --dns private --master-size t2.micro --node-size t2.micro --state s3://qiufengyu.checkbox --yes
+===================================================================
