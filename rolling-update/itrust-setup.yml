@@ -6,15 +6,14 @@
   vars:
     git_repo_folder: /root/iTrust2-v2
 
-  tasks:  
-  
-  - name: Add dependenies 
-    roles:
+  roles:
     - refresh-apt
     - java8
     - maven
     - git
-   
+
+  tasks:  
+  
   - name: delete directory if it exists
     file:
       path: "{{ git_repo_folder }}"
@@ -78,4 +77,4 @@
       port: 8080
       delay: 15
 
-#- import_playbook: update.yml
+- import_playbook: rolling-update.yml

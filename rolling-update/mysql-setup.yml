@@ -3,20 +3,19 @@
   remote_user: root
   gather_facts: no
  
-  tasks:  
-  
-  - name: Add dependenies 
-    roles:
+  roles:
     - refresh-apt
     - python-pip
     - mysql-server
     - mysql-python
+
+  tasks:  
     
-  - name: edit my.cnf file - remove extra line
-    lineinfile:
-      path: /etc/mysql/my.cnf
-      line: [mysql]
-      state: absent
+  # - name: edit my.cnf file - remove extra line
+  #   lineinfile:
+  #     path: /etc/mysql/my.cnf
+  #     line: [mysql]
+  #     state: absent
 
   - name: comment out bind-address
     replace:

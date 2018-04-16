@@ -6,16 +6,15 @@
     droplets_iTrust:
     - droplet-iTrust-1
     - droplet-iTrust-2
-    - droplet-iTrust-3
+    # - droplet-iTrust-3
     # - droplet-iTrust-4
     # - droplet-iTrust-5
-    
-  tasks:
-  - name: install dependencies
-    become: yes
-    roles:
+
+  roles:
     - python-pip
     - dopy
+    
+  tasks:
   
   - name: ensure ssh key exists
     user:

@@ -1,5 +1,6 @@
 ---
 - name: install dopy
+  become: yes
   pip:
     name: dopy
     version: 0.3.5
