@@ -1,0 +1,46 @@
+- name: install build-essential and tcl8.5
+  become: yes
+  apt:
+    name: "{{ item }}"
+  with_items:
+    - build-essential
+    - tcl8.5
+
+- name: download redis
+  become: yes
+  get_url:
+    url: http://download.redis.io/releases/redis-stable.tar.gz
+    dest: "{{ lb_folder }}"
+
+- name: untar redis
+  become: yes
+  shell: "tar xzf redis-stable.tar.gz"
+  args:
+    chdir: "{{ lb_folder }}"
+
+- name: make and make install redis
+  become: yes
+  shell: "make; make install"
+  args:
+    chdir: "{{ lb_folder }}/redis-stable"
+
+- name: install redis
+  become: yes
+  shell: "./install_server.sh"
+  args:
+    chdir: "{{ lb_folder }}/redis-stable/utils"
+
+- name: restart redis
+  become: yes
+  service:
+    name: redis_6379
+    state: restarted
+
+- name: set staging flag
+  become: yes
+  shell: "redis-cli set flag 1"
+
+- name: install redis for python
+  become: yes
+  pip:
+    name: redis

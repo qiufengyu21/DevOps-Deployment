@@ -20,7 +20,8 @@
       prompt: "enter mongodb password"
   roles:
     - mongodb
-    - load-balancer
+    #- load-balancer
+    - redis
 
 - hosts: droplets
   remote_user: root
