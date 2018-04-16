@@ -5,28 +5,12 @@
  
   tasks:  
   
-  - name: Run autoclean, autoremove and update cache
-    apt:
-      autoclean: yes
-      autoremove: yes
-      update_cache: yes
-
-  - name: Install pip, mysql
-    apt: 
-      pkg: "{{ item }}"
-      state: present
-    with_items:
+  - name: Add dependenies 
+    roles:
+    - refresh-apt
     - python-pip
     - mysql-server
-    - libmysqlclient-dev
-    - libssl-dev
-    - build-essential
-    - libffi-dev
-    - python-dev
-
-  - name: install mysql-python
-    pip:
-      name: MySQL-python
+    - mysql-python
     
   - name: edit my.cnf file - remove extra line
     lineinfile:

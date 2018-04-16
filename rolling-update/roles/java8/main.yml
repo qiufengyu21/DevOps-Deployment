@@ -1,0 +1,12 @@
+---
+- name: Install Java 8 PreReq
+  apt: name=python-software-properties
+    
+- name: Add Java 8 Repo
+  apt_repository: repo='ppa:webupd8team/java'
+
+- name: Accept Oracle License
+  debconf: name=oracle-java8-installer question=shared/accepted-oracle-license-v1-1 vtype=select value=true
+
+- name: Install Java 8
+  apt: name=oracle-java8-installer force=yes

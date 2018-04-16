@@ -3,8 +3,6 @@
 
   vars:
     do_token: "{{ lookup('env', 'DOTOKEN') }}"
-    git_username: "{{ lookup('env', 'GITUSER') }}"
-    git_auth: "{{ lookup('env', 'GITAUTH') }}"
     droplets_iTrust:
     - droplet-iTrust-1
     - droplet-iTrust-2
@@ -13,17 +11,12 @@
     # - droplet-iTrust-5
     
   tasks:
-  - name: install pip
+  - name: install dependencies
     become: yes
-    apt:
-      name: python-pip
+    roles:
+    - python-pip
+    - dopy
   
-  - name: install dopy
-    become: yes
-    pip:
-      name: dopy
-      version: 0.3.5
-
   - name: ensure ssh key exists
     user:
       name: "{{ ansible_user_id }}"
@@ -102,6 +95,7 @@
       msg:"IP is {{ item.droplet.ip_address }}"
     with_items: "{{ droplets_iTrust_details.results }}"
   
+  # add hosts to inventory (in-memory). to be used for setting up itrust nodes.
   - name: add new host to inventory 
     add_host:
       name: "{{ item.droplet.ip_address }}"
@@ -112,7 +106,8 @@
     copy: 
       src: inventory-update.template
       dest: inventory-update
-    
+
+  # add hosts to inventory (file). to be used for rolling update itrust nodes.
   - name: replace IPs in inventory file
     lineinfile:
       path: inventory-update

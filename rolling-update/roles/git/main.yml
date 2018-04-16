@@ -1,0 +1,4 @@
+---
+- name: Install latest version of git
+  apt: pkg=git state=present
+  

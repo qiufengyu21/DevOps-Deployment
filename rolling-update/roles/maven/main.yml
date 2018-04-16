@@ -1,0 +1,4 @@
+---
+- name: Install latest version of maven
+  apt: pkg=maven state=present
+  

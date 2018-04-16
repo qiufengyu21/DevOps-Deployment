@@ -1,0 +1,4 @@
+---
+- name: install pip
+  apt:
+    name: python-pip

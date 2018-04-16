@@ -8,28 +8,10 @@
 
   tasks:  
   
-  - name: Run autoclean, autoremove and update cache
-    apt:
-      autoclean: yes
-      autoremove: yes
-      update_cache: yes
-      cache_valid_time: 3600
-
-  - name: Install Java 8 PreReq
-    apt: name=python-software-properties
-    
-  - name: Add Java 8 Repo
-    apt_repository: repo='ppa:webupd8team/java'
-
-  - name: Accept Oracle License
-    debconf: name=oracle-java8-installer question=shared/accepted-oracle-license-v1-1 vtype=select value=true
-
-  - name: Install Java 8
-    apt: name=oracle-java8-installer force=yes
-
-  - name: Install latest version of maven and git
-    apt: pkg="{{ item }}" state=present
-    with_items:
+  - name: Add dependenies 
+    roles:
+    - refresh-apt
+    - java8
     - maven
     - git
    
