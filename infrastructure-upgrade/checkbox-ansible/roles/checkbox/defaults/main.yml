@@ -1,3 +1,5 @@
 ---
+node_key: https://deb.nodesource.com/gpgkey/nodesource.gpg.key
+node_repo: deb https://deb.nodesource.com/node_6.x {{ ansible_distribution_release }} main
 checkbox_repo: https://github.com/chrisparnin/checkbox.io.git
-checkbox_dest: /devops/checkbox.io
+checkbox_dest: /home/ubuntu/devops

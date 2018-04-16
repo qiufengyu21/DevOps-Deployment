@@ -4,9 +4,25 @@
     pkg: "{{ item }}"
     state: present
   with_items:
-    - mongodb
+#    - git
+#    - mongodb
     - python-pip
     - nginx
+
+- name: Add the NodeSource package signing key
+  apt_key:
+    url: "{{ node_key }}"
+    state: present
+
+- name: Add nodejs repo
+  apt_repository:
+    repo: "{{node_repo}}"
+    state: present
+
+- name: Install nodejs
+  apt:
+    pkg: nodejs
+    state: present
 
 - name: Install pymongo
   pip:
@@ -61,18 +77,18 @@
     state: directory
     mode: 0777
 
-- name: Restart mongod service
-  service:
-    name: mongodb
-    state: restarted
+#- name: Restart mongod service
+#  service:
+#    name: mongodb
+#    state: restarted
 
-- name: Add MongoDB admin user
-  mongodb_user:
-    database: admin
-    name: "{{ lookup('env', 'MONGO_USER') }}"
-    password: "{{ lookup('env', 'MONGO_PASSWORD') }}"
-    roles: userAdminAnyDatabase
-    state: present
+#- name: Add MongoDB admin user
+#  mongodb_user:
+#    database: admin
+#    name: "{{ lookup('env', 'MONGO_USER') }}"
+#    password: "{{ lookup('env', 'MONGO_PASSWORD') }}"
+#    roles: userAdminAnyDatabase
+#    state: present
 
 - name: Stop all forever scripts
   command: forever stopall
