@@ -1,5 +1,5 @@
 ---
-- import_playbook: provisioning-vm.yml
+- import_playbook: provisioning-vm-checkbox.yml
 
 - hosts: new_droplet
   gather_facts: no
@@ -61,7 +61,7 @@
   
   - name: clone checkbox.io repo
     git:
-      repo: "https://github.com/patel-bhavik/checkbox.io.git"
+      repo: "https://github.com/chrisparnin/checkbox.io.git"
       dest: "{{ git_repo_folder }}"
       force: yes
   
