@@ -9,10 +9,6 @@
       prompt: "Enter jenkins admin password"
     - name: "DOTOKEN"
       prompt: "Enter DO token"
-    - name: "GITUSER"
-      prompt: "Enter github.ncsu.edu user"
-    - name: "GITAUTH"
-      prompt: "Enter github.ncsu.edu auth token"
 
   vars:
     plugins:
@@ -33,10 +29,15 @@
     dir: "{{ playbook_dir }}/jobs"
 
   tasks:
-    #- import_tasks: tasks/environment.yml
-    #- import_tasks: tasks/appdeps.yml
+    - name: Add environment values
+      become: yes
+      become_method: sudo
+      lineinfile:
+        path: "/etc/environment"
+        line: "DOTOKEN={{ DOTOKEN }}"
+    - import_tasks: tasks/appdeps.yml
     - import_tasks: tasks/prereqs.yml
-    #- import_tasks: tasks/install.yml
+    - import_tasks: tasks/install.yml
     - import_tasks: tasks/setup.yml
-    #- import_tasks: tasks/plugins.yml
+    - import_tasks: tasks/plugins.yml
     - import_tasks: tasks/jobs.yml

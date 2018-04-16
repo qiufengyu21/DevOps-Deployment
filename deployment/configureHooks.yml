@@ -1,0 +1,6 @@
+---
+- hosts: localhost
+  connection: local
+ 
+- import_playbook: ./tasks/addHookCheckbox.yml
+- import_playbook: ./tasks/addHookiTrust.yml

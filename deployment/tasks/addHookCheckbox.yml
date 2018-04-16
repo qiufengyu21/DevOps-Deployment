@@ -1,0 +1,22 @@
+---
+- hosts: localhost
+  connection: local
+
+  vars:
+    repoUrl: https://github.com/patel-bhavik/checkbox.io.git
+    destPath: /home/vagrant/deployment/checkbox.io
+    
+  tasks:
+  - name: clone checkbox.io repo
+    git:
+      repo: "{{ repoUrl }}"
+      dest: "{{ destPath }}"
+      force: yes
+      
+  - name: Copy Post Commit Hook
+    template:
+      force: yes
+      src: "/home/vagrant/deployment/templates/post-commit"
+      dest: "{{ destPath }}/.git/hooks"
+      mode: 0755
+    become: yes
