@@ -2,12 +2,12 @@
   become: yes
   copy:
     src: lb.py
-    dest: "{{ lb_folder }}/"
+    dest: "{{ ansible_env.HOME }}/"
 
 - name: run load balancer
   become: yes
   shell: nohup bash -c "python lb.py {{ prod_ip }} {{ staging_ip }}" &
   register: lb_output
   args:
-    chdir: "{{ lb_folder }}"
+    chdir: "{{ ansible_env.HOME }}"
 

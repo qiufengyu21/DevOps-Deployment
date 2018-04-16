@@ -10,25 +10,25 @@
   become: yes
   get_url:
     url: http://download.redis.io/releases/redis-stable.tar.gz
-    dest: "{{ lb_folder }}"
+    dest: "{{ ansible_env.HOME }}"
 
 - name: untar redis
   become: yes
   shell: "tar xzf redis-stable.tar.gz"
   args:
-    chdir: "{{ lb_folder }}"
+    chdir: "{{ ansible_env.HOME }}"
 
 - name: make and make install redis
   become: yes
   shell: "make; make install"
   args:
-    chdir: "{{ lb_folder }}/redis-stable"
+    chdir: "{{ ansible_env.HOME }}/redis-stable"
 
 - name: install redis
   become: yes
   shell: "./install_server.sh"
   args:
-    chdir: "{{ lb_folder }}/redis-stable/utils"
+    chdir: "{{ ansible_env.HOME }}/redis-stable/utils"
 
 - name: restart redis
   become: yes
