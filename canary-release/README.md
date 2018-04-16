@@ -1,6 +1,6 @@
 # CANARY-RELEASE
 
-### [Screencast](https://somelinkhere.com)
+### [Screencast](https://youtu.be/8o2SPzzmVuQ)
 
 ### Important files
 - [Vagrantfile](https://github.ncsu.edu/sjha5/Deployment/blob/master/canary-release/Vagrantfile): Sets up Vagrant VM with git and ansible installed. Requires DO token to be added.
