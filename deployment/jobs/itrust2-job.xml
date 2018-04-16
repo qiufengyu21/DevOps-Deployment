@@ -40,7 +40,7 @@
               <string>SUCCESS</string>
             </results>
             <role>BOTH</role>
-            <filePath>/home/vagrant/final/post-build/itrust2-post-action.sh</filePath>
+            <filePath>/home/vagrant/deployment/post-build/itrust2-post-action.sh</filePath>
             <scriptType>GENERIC</scriptType>
             <sandboxed>false</sandboxed>
           </org.jenkinsci.plugins.postbuildscript.model.ScriptFile>

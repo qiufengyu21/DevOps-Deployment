@@ -18,7 +18,7 @@
     autoremove: yes
     update_cache: yes
   become: yes
-
+  
 - name: Install latest version of mysql
   become_method: sudo
   become: yes
@@ -36,6 +36,12 @@
 - name: install mysql-python
   pip:
     name: MySQL-python
+  become: yes
+- name: install dopy
+  pip:
+    name: dopy
+    version: 0.3.5
+  become: yes
 - name: edit my.cnf file
   become: yes
   become_method: sudo
@@ -57,14 +63,10 @@
     host: "%"
     priv: "*.*:ALL"
     state: present
+  become: yes
 - name: restart mysql
   become: yes
   become_method: sudo
   service:
     name: mysql
     state: restarted
-
-- name: install maven
-  become: yes
-  apt:
-    name: maven

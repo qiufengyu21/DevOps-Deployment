@@ -20,7 +20,7 @@
       - github
       - postbuildscript
       - postbuild-task
-    jenkins_java_args: 'JAVA_ARGS="-Djava.awt.headless=true -Djenkins.install.runSetupWizard=false"'
+    jenkins_java_args: 'JAVA_ARGS="-Djava.awt.headless=true -Djenkins.install.runSetupWizard=false -Xmx2048m"'
     jenkins_home: /var/lib/jenkins
     jenkins_hostname: 127.0.0.1
     jenkins_http_port: 8080
@@ -33,11 +33,10 @@
     dir: "{{ playbook_dir }}/jobs"
 
   tasks:
-    - import_tasks: tasks/environment.yml
+    #- import_tasks: tasks/environment.yml
+    #- import_tasks: tasks/appdeps.yml
     - import_tasks: tasks/prereqs.yml
-    - import_tasks: tasks/install.yml
+    #- import_tasks: tasks/install.yml
     - import_tasks: tasks/setup.yml
-    - import_tasks: tasks/plugins.yml
-    - import_tasks: tasks/clideps.yml
-    - import_tasks: tasks/appdeps.yml
+    #- import_tasks: tasks/plugins.yml
     - import_tasks: tasks/jobs.yml

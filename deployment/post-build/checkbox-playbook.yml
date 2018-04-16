@@ -44,6 +44,14 @@
     pip: 
       name: pymongo
   
+  - name: restart mongodb
+    become: yes
+    become_method: sudo
+    service:
+      name: mongod
+      state: restarted
+      daemon-reload: true
+  
   - name: add admin user in mongodb
     mongodb_user:
       database: admin

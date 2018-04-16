@@ -1,5 +1,9 @@
 ---
-
+- name: install pip
+  apt:
+    name: python-pip
+  become: yes
+  
 - name: install dopy
   pip:
     name: dopy

@@ -18,3 +18,12 @@
 - name: Update apt package
   become: yes
   action: apt update_cache=yes
+
+- name: Install Git
+  become: true
+  apt: name=git state=present update_cache=yes cache_valid_time=3600
+  
+- name: install maven
+  become: yes
+  apt:
+    name: maven
