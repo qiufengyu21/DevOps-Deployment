@@ -1,0 +1,6 @@
+1. make sure you have aws s3 bucket set up
+2. make sure you have aws route53 set up
+3. export aws access_key, secret_key, and s3 states
+4. install ansible
+5. run ansible scripts to install kubectl, kops
+6. run ansible script to create cluster

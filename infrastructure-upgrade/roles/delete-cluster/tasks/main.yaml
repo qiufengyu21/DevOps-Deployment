@@ -1,0 +1,2 @@
+- name: Delete the cluster
+  shell: "kops delete cluster --name=qiufeng.checkbox.io --yes"

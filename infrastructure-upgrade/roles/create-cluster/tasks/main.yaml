@@ -1,0 +1,2 @@
+- name: create the Kubernetes cluster
+  shell: "kops create cluster --cloud=aws --zones=us-east-1a --name=qiufeng.checkbox.io --dns-zone=qiufeng.checkbox.io --dns private --master-size t2.micro --node-size t2.micro --yes"
