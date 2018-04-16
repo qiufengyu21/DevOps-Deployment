@@ -1,0 +1,83 @@
+---
+- name: Install packages
+  apt: 
+    pkg: "{{ item }}"
+    state: present
+  with_items:
+    - mongodb
+    - python-pip
+    - nginx
+
+- name: Install pymongo
+  pip:
+    name: pymongo
+    state: present
+
+- name: Clone repo
+  git:
+    repo: "{{ checkbox_repo }}"
+    dest: "{{ checkbox_dest }}"
+
+- name: Install local node modules
+  npm:
+    path: "{{ checkbox_dest }}/server-side/site"
+
+- name: Install forever
+  npm:
+    name: forever
+    global: yes
+    state: present
+
+- name: Set environment variables
+  blockinfile:
+    path: /etc/environment
+    block: |
+      export MONGO_IP={{ lookup('env', 'MONGO_IP') }}
+      export MONGO_PORT={{ lookup('env', 'MONGO_PORT') }}
+      export MONGO_USER={{ lookup('env', 'MONGO_USER') }}
+      export MONGO_PASSWORD={{ lookup('env', 'MONGO_PASSWORD') }}
+    create: yes
+    state: present
+
+- name: Copy default for nginx
+  template:
+    src: default.jj2
+    dest: /etc/nginx/sites-available/default
+
+- name: Copy nginx config
+  copy:
+    src: "{{ checkbox_dest }}/local-conf/nginx.conf"
+    dest: /etc/nginx/nginx.conf
+    remote_src: yes
+
+- name: Restart nginx
+  service:
+    name: nginx
+    state: restarted
+
+- name: Create MongoDB directory
+  file:
+    path: /data/db
+    state: directory
+    mode: 0777
+
+- name: Restart mongod service
+  service:
+    name: mongodb
+    state: restarted
+
+- name: Add MongoDB admin user
+  mongodb_user:
+    database: admin
+    name: "{{ lookup('env', 'MONGO_USER') }}"
+    password: "{{ lookup('env', 'MONGO_PASSWORD') }}"
+    roles: userAdminAnyDatabase
+    state: present
+
+- name: Stop all forever scripts
+  command: forever stopall
+
+- name: Start server.js using forever
+  command: forever start server.js
+  args:
+    chdir: "{{ checkbox_dest }}/server-side/site/"

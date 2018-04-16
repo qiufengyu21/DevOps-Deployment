@@ -1,0 +1,15 @@
+---
+- hosts: localhost
+  become: yes
+  
+  pre_tasks:
+  - name: Install Python
+    raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
+  
+  - name: Install aptitude
+    raw: test -e /usr/bin/aptitude || (apt install -y aptitude)
+      
+  - setup:
+  
+  roles:
+    - checkbox
