@@ -9,6 +9,10 @@
 
 - hosts: mongodb_host
   remote_user: root
+  vars:
+    lb_folder: "/home/vagrant"
+    prod_ip: "{{ hostvars['localhost']['droplet_prod']['droplet']['ip_address'] }}" 
+    staging_ip: "{{ hostvars['localhost']['droplet_staging']['droplet']['ip_address'] }}"
   vars_prompt:
     - name: "mongo_user"
       prompt: "enter mongo admin user"
@@ -16,6 +20,7 @@
       prompt: "enter mongodb password"
   roles:
     - mongodb
+    - load-balancer
 
 - hosts: droplets
   remote_user: root
