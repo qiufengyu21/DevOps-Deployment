@@ -3,7 +3,7 @@
 Deployment
 ----------------------------------
 
-Following are the detailed report regarding steps involved to perform this milestone of the project. Following steps explains all the playbooks that we have written and purposes of each one. Starting point of our project is [main](main.yml) ansible playbook.
+Following are the detailed report regarding steps involved to perform this milestone of the project. Following steps explains all the playbooks that we have written and purposes of each one. Starting point of our project is [main](/deployment/main.yml) ansible playbook.
 
 1. **Main Playbook**
 
@@ -37,7 +37,7 @@ Following are the detailed report regarding steps involved to perform this miles
 
 	Now we will explain each of the playbook that main playbook imports.
 		
-	1. [appdeps.yml](/tasks/appdeps.yml)
+	1. [appdeps.yml](/deployment/tasks/appdeps.yml)
 
 	    In this playbook we install softwares which we need to build the jobs for checkbox.io and iTrust applications. Following are the tools which are being installed via this playbook.
 	
@@ -47,15 +47,15 @@ Following are the detailed report regarding steps involved to perform this miles
 	
 	    - **Maven**
     
-    2. [prereqs.yml](/tasks/prereqs.yml)
+    2. [prereqs.yml](/deployment/tasks/prereqs.yml)
 	
 		To setup jenkins server we need Java to be installed on our machine as pre-requisite. So as a first step we installed Java on our machine. We also update apt package in this playbook.
 		
-	3. [install.yml](/tasks/install.yml)
+	3. [install.yml](/deployment/tasks/install.yml)
 	
 		Purpose of this playbook is to install jenkins. For this we first add apt-key, then we update jenkins source list and then finally we install jenkins.
 	
-	4. [setup.yml](/tasks/setup.yml)
+	4. [setup.yml](/deployment/tasks/setup.yml)
 	
 		Purpose of this playbook is to disable manual setup steps. After installing jenkins, when we first access it we need to create a user for configuration jenkins server. In this playbook by following following steps we disable that initial setup.
 		
@@ -75,7 +75,7 @@ Following are the detailed report regarding steps involved to perform this miles
 			
 			As we have automated manual setup steps after we have restarted jenkins we change the install state of jenkins to `INITIAL_SETUP_COMPLETED`. Making this change will help in disabling the initial setup wizard.
 		
-	5. [plugins.yml](/tasks/plugins.yml)
+	5. [plugins.yml](/deployment/tasks/plugins.yml)
 	
 		Purpose of this playbook is to install required plugins for jenkins. Following are the actions performed in this playbbok.
 		
@@ -100,7 +100,7 @@ Following are the detailed report regarding steps involved to perform this miles
 			After creating user we restart jenkins service to make these changes take effect.
 			Now we can access jenkins via browser to confirm proper configuration and setup of jenkins server. These playbooks we used to setup jenkins server automatically without any manual intervention. Further playbooks are explained in next sections as those are related to building jobs and executing them.
 	
-    6. [jobs.yml](/tasks/jobs.yml)
+    6. [jobs.yml](/deployment/tasks/jobs.yml)
         
         Purpose of this playbook is to create and run the jobs for checkbox.io and iTrust applications. Following steps are performed in this playbook.
 
@@ -114,7 +114,7 @@ Following are the detailed report regarding steps involved to perform this miles
 
 3. **Configure Hook**
 
-    [This](/configureHooks.yml) playbook clones both of the systems and adds post commit hook into it. We follow [this](/templates/post-commit) template to create hooks. After this whenever we commit any changes, the jobs which we configured earlier gets triggered and in it's post action a droplet gets provisioned for each system and it gets deployed in that droplet. 
+    [This](/deployment/configureHooks.yml) playbook clones both of the systems and adds post commit hook into it. We follow [this](/deployment/templates/post-commit) template to create hooks. After this whenever we commit any changes, the jobs which we configured earlier gets triggered and in it's post action a droplet gets provisioned for each system and it gets deployed in that droplet. 
 
 4. **Screencast**
 
