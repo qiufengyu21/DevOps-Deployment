@@ -1,4 +1,9 @@
-# CANARY-RELEASE
+[Deployment Milestone](../README.md) | [Deployment](/deployment/deployment.md) | [Infrastructure Upgrade](/infrastructure-upgrade/infra-upgrade.md)
+
+[Rolling Update](/rolling-update/rol-update.md) | [Team Details](/Team.md)
+
+Canary Release
+----------------------------------
 
 ### [Screencast](https://youtu.be/8o2SPzzmVuQ)
 
@@ -18,3 +23,5 @@
 - Redis: After being installed, a key in redis called `flag` is set to `1`. This is the check for the load-balancer before redirecting to the staging instance.
 - Load-balancer: It is passed the prod and staging IPs as arguments when it is run. It acts as a load balancer by using probability such that 80% and 20% of the time it redirects to prod and staging respectively. It also checks the `flag` flag in redis for a value of `1` before redirecting to staging otherwise it sends to prod.
 - Altering: We did not simulate alerting per se, but we assumed that an alert would trigger the redis flag to false. This causes the load-balancer to not redirect any traffic to the staging instance. This can be seen in the screencast.
+
+[<<< Previous](/infrastructure-upgrade/infra-upgrade.md) | [Next >>>](/rolling-update/rol-update.md)
