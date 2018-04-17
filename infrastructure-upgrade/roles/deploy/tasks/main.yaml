@@ -1,0 +1,8 @@
+- name: kubectl run
+  shell: kubectl run checkbox --image=nginx --replicas=3 --port=80
+
+- name: LoadBalancer
+  shell: kubectl expose deployment checkbox --port=80 --type=LoadBalancer
+  
+- name: Check status
+  shell: kubectl get services -o wide
