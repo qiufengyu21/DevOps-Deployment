@@ -114,10 +114,28 @@ Following are the detailed report regarding steps involved to perform this miles
 
 3. **Configure Hook**
 
-    [This](/deployment/configureHooks.yml) playbook clones both of the systems and adds post commit hook into it. We follow [this](/deployment/templates/post-commit) template to create hooks. After this whenever we commit any changes, the jobs which we configured earlier gets triggered and in it's post action a droplet gets provisioned for each system and it gets deployed in that droplet. 
+    [This](/deployment/configureHooks.yml) playbook clones both of the systems and adds post commit hook into it. We follow [this](/deployment/templates/post-commit) template to create hooks. 
+	Hook has the following instruction in it.
+	```
+	#!/bin/sh
+	curl {{ Jenkins Server Url }}/git/notifyCommit?url={{ repoUrl }}
+	```
+	After this whenever we commit any changes, the jobs which we configured earlier gets triggered and in it's post action a droplet gets provisioned for each system and it gets deployed in that droplet. 
 
 4. **Screencast**
 
     [Video Link](https://youtu.be/dU7e3dvIC7o)
+
+5. **Files**
+
+	1. [Main Ansible Files](/deployment)
+	2. [Task Ansible Files](/deployment/tasks)
+	3. [Post Build Ansible Files](/deployment/post-build)
+	4. [Templates for Groovy and Hook](/deployment/templates/)
+	5. [Jobs XML](/deployment/jobs)
+
+6. **Flow**
+
+	Provision a vagrant VM. Install ansible on it. Run [main](/deployment/main.yml) ansible playbook. After this jenkins server will be setup and jobs will be configured. Jobs are configured in such a way that it polls SCM. After this run [configure hook](/deployment/configureHooks.yml). This will clone the repo and add hook into it. Now make some commit into git and job will start building.
 
 [<<< Previous](../README.md) | [Next >>>](/infrastructure-upgrade/infra-upgrade.md)
