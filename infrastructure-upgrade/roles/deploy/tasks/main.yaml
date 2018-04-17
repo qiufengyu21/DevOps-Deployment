@@ -1,8 +1,9 @@
 - name: kubectl run
-  shell: kubectl run checkbox --image=nginx --replicas=3 --port=80
+  shell: kubectl run checkbox --image=368580113144.dkr.ecr.us-east-1.amazonaws.com/123123
+ --replicas=3 --port=3002
 
 - name: LoadBalancer
-  shell: kubectl expose deployment checkbox --port=80 --type=LoadBalancer
+  shell: kubectl expose deployment checkbox --port=3002 --type=LoadBalancer
   
 - name: Check status
   shell: kubectl get services -o wide
