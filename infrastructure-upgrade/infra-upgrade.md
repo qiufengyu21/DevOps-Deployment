@@ -6,3 +6,5 @@ Infrastructure Upgrade
 ----------------------------------
 
 [<<< Previous](/deployment/deployment.md) | [Next >>>](/canary-release/can-rel.md)
+
+### [Screencast](http://tiny.cc/screencastM3)

@@ -14,7 +14,7 @@
 
   tasks:  
   
-  - name: delete directory if it exists
+  - name: Delete directory if it exists
     file:
       path: "{{ git_repo_folder }}"
       state: absent
@@ -32,7 +32,7 @@
       src: "{{ git_repo_folder }}/iTrust2/src/main/java/db.properties.template"
       dest: "{{ git_repo_folder }}/iTrust2/src/main/java/db.properties"
 
-  - name: edit db.properties file to connect mysql_server
+  - name: Edit db.properties file to connect mysql_server
     replace:
       path: "{{ git_repo_folder }}/iTrust2/src/main/java/db.properties"
       regexp: localhost
@@ -44,7 +44,7 @@
       src: "{{ git_repo_folder }}/iTrust2/src/main/resources/hibernate.properties.template"
       dest: "{{ git_repo_folder }}/iTrust2/src/main/resources/hibernate.properties"
   
-  - name: edit hibernate.properties file to connect mysql_server
+  - name: Edit hibernate.properties file to connect mysql_server
     replace:
       path: "{{ git_repo_folder }}/iTrust2/src/main/resources/hibernate.properties"
       regexp: localhost
@@ -77,4 +77,4 @@
       port: 8080
       delay: 15
 
-- import_playbook: rolling-update.yml
+# - import_playbook: rolling-update.yml
