@@ -16,4 +16,4 @@ After installing the kubectl and kops, we are able to create the Kubernete clust
 
 After that, we have successfully created a Kubernetes with 3 nodes, one master and 2 minions. We can not deploy our application on the cluster. 
 
-As long as the application is accessible from the external link provided by the kubectl, we can safely turn off any node and still keep the service up and running.
+As long as the application is accessible from the external link provided by the kubectl, we can safely turn off any node and still keep the service up and running. Reason being is that, the Kubernete cluster created redundency in order to protect the running service. Once a particular node is down, the master node will redirect the traffice to other available nodes.
