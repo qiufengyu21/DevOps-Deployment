@@ -6,6 +6,8 @@ Infrastructure Upgrade
 [<<< Previous](/deployment/deployment.md) | [Next >>>](/canary-release/can-rel.md)
 
 ### [Screencast](https://youtu.be/ufThfV6sgbo)
+## Screencast(Youtube video)
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/ufThfV6sgbo/0.jpg)](https://www.youtube.com/watch?v=ufThfV6sgbo)
 
 ### Infrastructure Upgrade
 In order to set up Kubernetes cluster on AWS, we have to first install kubectl and kops. The ansible scripts are provided in this folder.
