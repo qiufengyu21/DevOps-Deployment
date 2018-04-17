@@ -1,6 +1,4 @@
-[Deployment Milestone](../README.md) | [Deployment](/deployment/deployment.md) | [Infrastructure Upgrade](/infrastructure-upgrade/infra-upgrade.md)
-
-[Rolling Update](/rolling-update/rol-update.md) | [Team Details](../Team.md)
+[Deployment Milestone](../README.md) | [Deployment](/deployment/deployment.md) | [Infrastructure Upgrade](/infrastructure-upgrade/infra-upgrade.md) | [Rolling Update](/rolling-update/rol-update.md) | [Team Details](../Team.md)
 
 Canary Release
 ----------------------------------
