@@ -11,19 +11,13 @@
 
   tasks:  
     
-  # - name: edit my.cnf file - remove extra line
-  #   lineinfile:
-  #     path: /etc/mysql/my.cnf
-  #     line: [mysql]
-  #     state: absent
-
-  - name: comment out bind-address
+  - name: Comment out bind-address
     replace:
       path: /etc/mysql/my.cnf
       regexp: bind-address
       replace: "# bind-address"
 
-  - name: edit my.cnf file - add required lines
+  - name: Edit my.cnf file - add required lines
     blockinfile:
       path: /etc/mysql/my.cnf
       block: |
@@ -37,7 +31,7 @@
       priv: "*.*:ALL"
       state: present
 
-  - name: restart mysql
+  - name: Restart mysql
     service:
       name: mysql
       state: restarted
