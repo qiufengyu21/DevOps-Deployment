@@ -3,7 +3,7 @@
 Deployment
 ----------------------------------
 
-Following are the detailed report regarding steps involved to perform this milestone of the project. Following steps explains all the playbooks that we have written and purposes of each one. Starting point of our project is [main](/main.yml) ansible playbook.
+Following are the detailed report regarding steps involved to perform this milestone of the project. Following steps explains all the playbooks that we have written and purposes of each one. Starting point of our project is [main](main.yml) ansible playbook.
 
 1. **Main Playbook**
 
