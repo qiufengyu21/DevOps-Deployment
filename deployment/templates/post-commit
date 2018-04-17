@@ -1,2 +1,2 @@
 #!/bin/sh
-curl http://192.168.33.10:8080/git/notifyCommit?url={{ repoUrl }}
+curl http://192.168.33.20:8080/git/notifyCommit?url={{ repoUrl }}
